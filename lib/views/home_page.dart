@@ -1,5 +1,6 @@
-// ignore_for_file: prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, deprecated_member_use, sized_box_for_whitespace, avoid_print, unused_element, unnecessary_cast, unused_import
+// ignore_for_file: prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, deprecated_member_use, sized_box_for_whitespace, avoid_print, unused_element, unnecessary_cast, unused_import, unused_local_variable
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   bool _loading = false;
   bool _enableField = true;
   String? _result;
+  String? status = 'Favor, informar o cep';
   String? cep = '';
   String? logradouro = '';
   String? complemento = '';
@@ -39,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BUSCADOR DE ENDEREÇO'),
+        title: Text('BUSCADOR DE ENDEREÇO - CEP'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -47,10 +49,8 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             _buildSearchCepTextField(),
-
             _buildSearchCepButton(),
-            //_buildResultForm(),
-            _buildResultForm_2()
+            _buildResultForm()
           ],
         ),
       ),
@@ -99,13 +99,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildResultForm() {
-    return Container(
-      padding: EdgeInsets.only(top: 20.0),
-      child: Text(_result ?? ''),
-    );
-  }
-
-  Widget _buildResultForm_2() {
     return Card(
       elevation: 3,
       margin: const EdgeInsets.all(15),
@@ -129,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                 // ignore: prefer_const_literals_to_create_immutables
                 children: [
                   Text(
-                    'STATUS LOCALIZAÇÃO',
+                    '$status',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -207,36 +200,42 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future _searchCep() async {
-    print('entrou na future');
-    _searching(true);
-
-    print('saiu do searching');
-
+    // cep recebe o conteudo digitado
     var cep = _searchCepController.text;
+    print(cep.length);
 
-    print('saiu do searchCntroller');
+    // valida cep
+    if (cep.isEmpty || cep == '' || cep.length > 8 || cep.length < 8) {
+      print('CEP ESTÁ INCORRETO');
 
-    final resultCep = await ViaCepService.fetchCep(cep: cep);
+      if (cep.length > 8 || cep.length < 8) {
+        status = 'QTD INCORRETO';
+      }
 
-    print(resultCep.localidade); // Exibindo somente a localidade no terminal
+      if (cep.isEmpty || cep == '') {
+        status = 'favor, informar o cep';
+      }
 
-    setState(() {
-      _result = resultCep.toJson() as String?;
+      cep = '';
+      logradouro = '';
+      complemento = '';
+      bairro = '';
+      localidade = '';
+      uf = '';
+      ibge = '';
+      gia = '';
+      ddd = '';
+      siafi = '';
+    } else {
+      // Validou ok
+      _searching(true);
+      final resultCep = await ViaCepService.fetchCep(cep: cep);
 
-      if (_result == null) {
-        print('JSON É NULL');
-        cep = '';
-        logradouro = '';
-        complemento = '';
-        bairro = '';
-        localidade = '';
-        uf = '';
-        ibge = '';
-        gia = '';
-        ddd = '';
-        siafi = '';
-      } else {
+      setState(() {
         print('JSON DIFERENTE DE NULL');
+
+        _result = resultCep.toJson() as String?;
+        status = 'Resultado da busca';
         cep = resultCep.cep;
         logradouro = resultCep.logradouro;
         complemento = resultCep.complemento;
@@ -247,8 +246,8 @@ class _HomePageState extends State<HomePage> {
         gia = resultCep.gia;
         ddd = resultCep.ddd;
         siafi = resultCep.siafi;
-      }
-    });
+      });
+    }
 
     _searching(false);
   }
