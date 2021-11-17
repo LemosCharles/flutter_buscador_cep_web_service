@@ -71,7 +71,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSearchCepButton() {
-    print('passo 02');
     return Padding(
       padding: const EdgeInsets.only(top: 30.0),
       child: RaisedButton(
@@ -206,14 +205,14 @@ class _HomePageState extends State<HomePage> {
 
     // valida cep
     if (cep.isEmpty || cep == '' || cep.length > 8 || cep.length < 8) {
-      print('CEP ESTÁ INCORRETO');
+      print('CEP ESTÁ INCORRETO!');
 
       if (cep.length > 8 || cep.length < 8) {
-        status = 'QTD INCORRETO';
+        status = 'Favor, digite 8 dígitos';
       }
 
       if (cep.isEmpty || cep == '') {
-        status = 'favor, informar o cep';
+        status = 'Favor, informar o cep';
       }
 
       cep = '';
@@ -226,30 +225,53 @@ class _HomePageState extends State<HomePage> {
       gia = '';
       ddd = '';
       siafi = '';
+      //
     } else {
-      // Validou ok
+      //
       _searching(true);
+
       final resultCep = await ViaCepService.fetchCep(cep: cep);
+      _result = resultCep.toJson() as String?;
 
       setState(() {
-        print('JSON DIFERENTE DE NULL');
+        var comparar = '93900-000';
+        print('------------------------');
+        print(comparar);
+        print(resultCep.cep);
+        print('------------------------');
 
-        _result = resultCep.toJson() as String?;
-        status = 'Resultado da busca';
-        cep = resultCep.cep;
-        logradouro = resultCep.logradouro;
-        complemento = resultCep.complemento;
-        bairro = resultCep.bairro;
-        localidade = resultCep.localidade;
-        uf = resultCep.uf;
-        ibge = resultCep.ibge;
-        gia = resultCep.gia;
-        ddd = resultCep.ddd;
-        siafi = resultCep.siafi;
+        if (resultCep.cep == comparar) {
+          print('COMPAROU AS STRINGS');
+          status = 'CEP INEXISTENTE';
+          cep = '';
+          logradouro = '';
+          complemento = '';
+          bairro = '';
+          localidade = '';
+          uf = '';
+          ibge = '';
+          gia = '';
+          ddd = '';
+          siafi = '';
+        } else {
+          print('NÃO COMPAROU AS STRINGS');
+          status = 'Resultado da busca';
+          cep = resultCep.cep;
+          logradouro = resultCep.logradouro;
+          complemento = resultCep.complemento;
+          bairro = resultCep.bairro;
+          localidade = resultCep.localidade;
+          uf = resultCep.uf;
+          ibge = resultCep.ibge;
+          gia = resultCep.gia;
+          ddd = resultCep.ddd;
+          siafi = resultCep.siafi;
+        }
       });
     }
 
     _searching(false);
+    //
   }
 
   void _searching(bool enable) {
