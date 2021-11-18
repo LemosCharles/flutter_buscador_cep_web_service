@@ -1,8 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, deprecated_member_use, sized_box_for_whitespace, avoid_print, unused_element, unnecessary_cast, unused_import, unused_local_variable
+// ignore_for_file: prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, deprecated_member_use, sized_box_for_whitespace, avoid_print, unused_element, unnecessary_cast, unused_import, unused_local_variable, prefer_const_literals_to_create_immutables, duplicate_ignore
 
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:web_service/services/via_cep_service.dart';
 
@@ -12,11 +13,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _searchCepController = TextEditingController();
+  // Declaração Bools
   bool _loading = false;
   bool _enableField = true;
+
+  // Declaração Strings
   String? _result;
-  String? status = 'Favor, informar o cep';
+  String? status = 'Favor, informar o CEP.';
   String? cep = '';
   String? logradouro = '';
   String? complemento = '';
@@ -27,7 +30,16 @@ class _HomePageState extends State<HomePage> {
   String? gia = '';
   String? ddd = '';
   String? siafi = '';
+
+  // Declaração Finals
   final formKey = GlobalKey<FormState>();
+  final List<Flushbar> flushBars = [];
+
+  // Var auxiliares
+  var titleSnackBar = '';
+  var massageSnackBar = '';
+  var comparar = '93900-000';
+  var _searchCepController = TextEditingController();
 
   get child => null;
 
@@ -199,22 +211,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future _searchCep() async {
-    // cep recebe o conteudo digitado
+    // Variaveis de apoio
     var cep = _searchCepController.text;
-    print(cep.length);
 
-    // valida cep
+    // Validações
     if (cep.isEmpty || cep == '' || cep.length > 8 || cep.length < 8) {
-      print('CEP ESTÁ INCORRETO!');
-
       if (cep.length > 8 || cep.length < 8) {
-        status = 'Favor, digite 8 dígitos';
+        titleSnackBar = 'Atenção!';
+        massageSnackBar = 'Quantidade de caracter incorreto.';
+        showTopSnackBar(context);
       }
 
       if (cep.isEmpty || cep == '') {
-        status = 'Favor, informar o cep';
+        titleSnackBar = 'Atenção!';
+        massageSnackBar = 'Campo em branco. Favor, informe o CEP para busca.';
+        showTopSnackBar(context);
       }
 
+      status = '';
       cep = '';
       logradouro = '';
       complemento = '';
@@ -234,15 +248,14 @@ class _HomePageState extends State<HomePage> {
       _result = resultCep.toJson() as String?;
 
       setState(() {
-        var comparar = '93900-000';
-        print('------------------------');
-        print(comparar);
-        print(resultCep.cep);
-        print('------------------------');
+        // Valida retorno do JSON
 
         if (resultCep.cep == comparar) {
-          print('COMPAROU AS STRINGS');
-          status = 'CEP INEXISTENTE';
+          titleSnackBar = 'Atenção!';
+          massageSnackBar = 'CEP inexistente!';
+          showTopSnackBar(context);
+
+          status = '';
           cep = '';
           logradouro = '';
           complemento = '';
@@ -254,7 +267,9 @@ class _HomePageState extends State<HomePage> {
           ddd = '';
           siafi = '';
         } else {
-          print('NÃO COMPAROU AS STRINGS');
+          titleSnackBar = 'CEP válido!';
+          massageSnackBar = 'Busca realizada com sucesso.';
+          showTopSnackBar(context);
           status = 'Resultado da busca';
           cep = resultCep.cep;
           logradouro = resultCep.logradouro;
@@ -280,5 +295,39 @@ class _HomePageState extends State<HomePage> {
       _loading = enable;
       _enableField = !enable;
     });
+  }
+
+  // FlushBar
+
+  void showTopSnackBar(BuildContext context) => show(
+        context,
+        Flushbar(
+          icon: Icon(Icons.error, size: 32, color: Colors.white),
+          shouldIconPulse: false,
+          title: titleSnackBar,
+          message: massageSnackBar,
+          mainButton: FlatButton(
+            child: Text(
+              'Click Me',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onPressed: () {},
+          ),
+          onTap: (_) {
+            print('Clicked bar');
+          },
+          duration: Duration(seconds: 3),
+          flushbarPosition: FlushbarPosition.TOP,
+          margin: EdgeInsets.fromLTRB(8, kToolbarHeight + 8, 8, 0),
+          //borderRadius: 16,
+        ),
+      );
+
+  Future show(BuildContext context, Flushbar newFlushBar) async {
+    await Future.wait(flushBars.map((flushBar) => flushBar.dismiss()).toList());
+    flushBars.clear();
+
+    newFlushBar.show(context);
+    flushBars.add(newFlushBar);
   }
 }
