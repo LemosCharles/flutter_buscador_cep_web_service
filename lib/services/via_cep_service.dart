@@ -16,12 +16,12 @@ class ViaCepService {
     var a = jsonDecode(response.body);
 
     if (a["erro"] == true) {
-      print('DEU ERRO NULO--- TRATAR AQUIIIII');
+      // Retornou o erro
       final Uri uriError = Uri.parse('https://viacep.com.br/ws/93900000/json/');
       final responseError = await http.get(uriError);
       return ResultCep.fromJson(responseError.body);
     } else {
-      print('BELEZA, VAI RETORNAR RESULTCEP');
+      // Retornou a pesquisa com suceso
       return ResultCep.fromJson(response.body);
     }
   }
