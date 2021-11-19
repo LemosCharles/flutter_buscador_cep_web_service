@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
 
   // Declaração Strings
   String? _result;
-  String? status = 'Favor, informar o CEP.';
+  String? status = 'Favor, informar o CEP';
   String? cep = '';
   String? logradouro = '';
   String? complemento = '';
