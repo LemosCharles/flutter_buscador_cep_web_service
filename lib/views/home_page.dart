@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Icon(
                 Icons.gps_fixed_rounded,
-                color: Colors.purple,
+                color: Colors.blueGrey,
                 size: 30,
               ),
               SizedBox(
@@ -297,15 +297,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // FlushBar
-
   void showTopSnackBar(BuildContext context) => show(
         context,
         Flushbar(
           icon: Icon(
             Icons.error,
             size: 40,
-            color: Colors.purple,
+            color: Colors.red,
           ),
 
           shouldIconPulse: false,
