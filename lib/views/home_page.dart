@@ -5,6 +5,9 @@ import 'dart:convert';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
+
+import 'package:web_service/models/result_cep.dart';
 import 'package:web_service/services/via_cep_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -54,6 +57,22 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('BUSCADOR DE ENDEREÇO'),
+
+        // ******************************************
+
+        //  actions: <Widget>[
+        //    IconButton(
+        //    icon: const Icon(
+        //        Icons.share,
+        //        color: Colors.white,
+        //      ),
+        //      onPressed: () {
+        //       _share(context);
+        //      },
+        //    )
+        //  ],
+
+        // ******************************************
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -120,11 +139,16 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             // ignore: prefer_const_literals_to_create_immutables
             children: [
-              Icon(
-                Icons.share,
-                color: Colors.blueGrey,
-                size: 30,
+              IconButton(
+                icon: const Icon(
+                  Icons.share,
+                  color: Colors.blueGrey,
+                ),
+                onPressed: () {
+                  _share(context);
+                },
               ),
+
               SizedBox(
                 width: 10,
               ),
@@ -310,20 +334,6 @@ class _HomePageState extends State<HomePage> {
           title: titleSnackBar,
           message: massageSnackBar,
 
-          /*****************************************
-          
-          Botton Link  com ação após Clik
-          
-            mainButton: FlatButton(
-              child: Text(
-                'Click Me',
-                style: TextStyle(color: Colors.purple, fontSize: 16),
-              ),
-              onPressed: () {},
-            ),
-
-          *******************************************/
-
           onTap: (_) {
             print('Clicked bar');
           },
@@ -340,5 +350,17 @@ class _HomePageState extends State<HomePage> {
 
     newFlushBar.show(context);
     flushBars.add(newFlushBar);
+  }
+
+  void _share(BuildContext context) {
+    dynamic cep;
+    if (_result != '') {
+      cep = ResultCep.fromJson(_result!);
+      Share.share(
+        "cep: ${cep.cep}, Logradouro: ${cep.logradouro}, Complemento: ${cep.complemento},"
+        "Bairro: ${cep.bairro}, Cidade: ${cep.localidade}, Uf: ${cep.uf}, Ibge: ${cep.ibge},"
+        "Gia: ${cep.gia}, DDD: ${cep.ddd}, Siafi: ${cep.siafi}.",
+      );
+    }
   }
 }
