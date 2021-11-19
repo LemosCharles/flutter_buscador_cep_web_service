@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, deprecated_member_use, sized_box_for_whitespace, avoid_print, unused_element, unnecessary_cast, unused_import, unused_local_variable, prefer_const_literals_to_create_immutables, duplicate_ignore
+// ignore_for_file: prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, deprecated_member_use, sized_box_for_whitespace, avoid_print, unused_element, unnecessary_cast, unused_import, unused_local_variable, prefer_const_literals_to_create_immutables, duplicate_ignore, unrelated_type_equality_checks, unused_field
 
 import 'dart:async';
 import 'dart:convert';
@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   // Declaração Bools
   bool _loading = false;
   bool _enableField = true;
+  bool _erro = true;
 
   // Declaração Strings
   String? _result;
@@ -57,22 +58,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('BUSCADOR DE ENDEREÇO'),
-
-        // ******************************************
-
-        //  actions: <Widget>[
-        //    IconButton(
-        //    icon: const Icon(
-        //        Icons.share,
-        //        color: Colors.white,
-        //      ),
-        //      onPressed: () {
-        //       _share(context);
-        //      },
-        //    )
-        //  ],
-
-        // ******************************************
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -88,7 +73,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ************ WIDGETS DO PROJETO ******************************
+  ///////////////////////////////////////////////////////////////////////
 
   Widget _buildSearchCepTextField() {
     return TextField(
@@ -241,12 +226,14 @@ class _HomePageState extends State<HomePage> {
     // Validações
     if (cep.isEmpty || cep == '' || cep.length > 8 || cep.length < 8) {
       if (cep.length > 8 || cep.length < 8) {
+        _erro = true;
         titleSnackBar = 'Atenção!';
         massageSnackBar = 'Quantidade de caracter incorreto.';
         showTopSnackBar(context);
       }
 
       if (cep.isEmpty || cep == '') {
+        _erro = true;
         titleSnackBar = 'Atenção!';
         massageSnackBar = 'Campo em branco. Favor, informe o CEP para busca.';
         showTopSnackBar(context);
@@ -275,6 +262,7 @@ class _HomePageState extends State<HomePage> {
         // Valida retorno do JSON
 
         if (resultCep.cep == comparar) {
+          _erro = true;
           titleSnackBar = 'Atenção!';
           massageSnackBar = 'CEP inexistente!';
           showTopSnackBar(context);
@@ -291,7 +279,8 @@ class _HomePageState extends State<HomePage> {
           ddd = '';
           siafi = '';
         } else {
-          titleSnackBar = 'CEP válido!';
+          _erro = false;
+          titleSnackBar = 'LEGAL!';
           massageSnackBar = 'Busca realizada com sucesso.';
           showTopSnackBar(context);
           status = 'Resultado da busca';
@@ -354,7 +343,12 @@ class _HomePageState extends State<HomePage> {
 
   void _share(BuildContext context) {
     dynamic cep;
-    if (_result != '') {
+
+    if (_erro == true) {
+      titleSnackBar = 'Atenção!';
+      massageSnackBar = 'Não é possível compartilhar um CEP inválido.';
+      showTopSnackBar(context);
+    } else if (_result != '') {
       cep = ResultCep.fromJson(_result!);
       Share.share(
         "cep: ${cep.cep}, Logradouro: ${cep.logradouro}, Complemento: ${cep.complemento},"
