@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BUSCADOR DE ENDEREÇO - CEP'),
+        title: Text('BUSCADOR DE ENDEREÇO'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -302,17 +302,30 @@ class _HomePageState extends State<HomePage> {
   void showTopSnackBar(BuildContext context) => show(
         context,
         Flushbar(
-          icon: Icon(Icons.error, size: 32, color: Colors.white),
+          icon: Icon(
+            Icons.error,
+            size: 40,
+            color: Colors.purple,
+          ),
+
           shouldIconPulse: false,
           title: titleSnackBar,
           message: massageSnackBar,
-          mainButton: FlatButton(
-            child: Text(
-              'Click Me',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+
+          /*****************************************
+          
+          Botton Link  com ação após Clik
+          
+            mainButton: FlatButton(
+              child: Text(
+                'Click Me',
+                style: TextStyle(color: Colors.purple, fontSize: 16),
+              ),
+              onPressed: () {},
             ),
-            onPressed: () {},
-          ),
+
+          *******************************************/
+
           onTap: (_) {
             print('Clicked bar');
           },
