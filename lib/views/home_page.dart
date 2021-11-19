@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
             // ignore: prefer_const_literals_to_create_immutables
             children: [
               Icon(
-                Icons.gps_fixed_rounded,
+                Icons.share,
                 color: Colors.blueGrey,
                 size: 30,
               ),
